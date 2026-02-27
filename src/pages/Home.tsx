@@ -8,8 +8,6 @@ const Home = () => {
     useEffect(() => {
         api.get('/recipe') 
             .then(response => {
-                // response.data es el objeto del backend { data: [...], error: false }
-                // response.data.data es el array real de recetas que está en MongoDB
                 setRecipes(response.data.data); 
                 setLoading(false);
             })
