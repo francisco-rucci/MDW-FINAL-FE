@@ -1,9 +1,10 @@
-import { createRoot } from 'react-dom/client' // Importación necesaria
+import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import PublicLayout from "./publicLayout";
 import Home from "./pages/Home";
 import ErrorPage from "./components/ErrorPage";
-import './index.css' // Importante para Tailwind
+import './index.css'
+import Register from './pages/Register';
 
 const router = createBrowserRouter([
   {
@@ -21,13 +22,12 @@ const router = createBrowserRouter([
       },
       {
         path: "register",
-        element: <div>Página de Registro</div>,
+        element: <Register />, 
       }
     ],
   }
 ]);
 
-// ESTO ES LO QUE FALTA PARA QUE DEJE DE ESTAR EN BLANCO:
 createRoot(document.getElementById("root")!).render(
   <RouterProvider router={router} />
 );
