@@ -6,8 +6,10 @@ import Home from "./pages/Home";
 import ErrorPage from "./components/ErrorPage";
 import Register from './pages/Register';
 import Login from "./pages/Login";
-import { AuthProvider } from './context/AuthContext';
 import './index.css';
+import { Provider } from 'react-redux';
+import { store } from './store/store';
+import { AuthWrapper } from './components/AuthWrapper';
 
 const router = createBrowserRouter([
   {
@@ -33,8 +35,10 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <AuthProvider>
-        <RouterProvider router={router} />
-    </AuthProvider>
+    <Provider store={store}>
+      <AuthWrapper>
+          <RouterProvider router={router} />
+      </AuthWrapper>
+    </Provider>
   </StrictMode>
 );
