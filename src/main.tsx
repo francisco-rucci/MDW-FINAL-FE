@@ -1,10 +1,13 @@
-import { createRoot } from 'react-dom/client'
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import PublicLayout from "./publicLayout";
 import Home from "./pages/Home";
 import ErrorPage from "./components/ErrorPage";
-import './index.css'
 import Register from './pages/Register';
+import Login from "./pages/Login";
+import { AuthProvider } from './context/AuthContext';
+import './index.css';
 
 const router = createBrowserRouter([
   {
@@ -18,7 +21,7 @@ const router = createBrowserRouter([
       },
       {
         path: "login",
-        element: <div>Página de Login</div>,
+        element: <Login />,
       },
       {
         path: "register",
@@ -28,6 +31,10 @@ const router = createBrowserRouter([
   }
 ]);
 
-createRoot(document.getElementById("root")!).render(
-  <RouterProvider router={router} />
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <AuthProvider>
+        <RouterProvider router={router} />
+    </AuthProvider>
+  </StrictMode>
 );

@@ -1,10 +1,28 @@
 import { useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
+import { useAuth } from "./context/AuthContext";
+import { auth } from "./config/firebase";
+import { signOut } from "firebase/auth";
 
 const PublicLayout = () => {
     const [menuOpen, setMenuOpen] = useState(false);
+    
+    // 1. Traemos el estado del usuario y la herramienta para navegar
+    const { currentUser } = useAuth();
+    const navigate = useNavigate();
 
     const handleLinkClick = () => setMenuOpen(false);
+
+    // 2. Función para cerrar sesión
+    const handleLogout = async () => {
+        try {
+            await signOut(auth);
+            handleLinkClick();
+            navigate("/"); 
+        } catch (error) {
+            console.error("Error al cerrar sesión:", error);
+        }
+    };
 
     return (
         <div className="min-h-screen flex flex-col bg-gray-50 text-gray-800">
@@ -14,10 +32,7 @@ const PublicLayout = () => {
                 <div className="max-w-7xl mx-auto h-[80px] px-6 flex justify-between items-center relative">
 
                     {/* LOGO */}
-                    <Link
-                        to="/"
-                        className="text-2xl font-bold text-orange-500 tracking-tight"
-                    >
+                    <Link to="/" className="text-2xl font-bold text-orange-500 tracking-tight">
                         Recetas App
                     </Link>
 
@@ -41,34 +56,48 @@ const PublicLayout = () => {
               ${menuOpen ? "block" : "hidden"} md:flex`}
                         >
                             <li>
-                                <Link
-                                    to="/"
-                                    onClick={handleLinkClick}
-                                    className="hover:text-orange-500 transition-colors"
-                                >
+                                <Link to="/" onClick={handleLinkClick} className="hover:text-orange-500 transition-colors">
                                     Inicio
                                 </Link>
                             </li>
 
-                            <li>
-                                <Link
-                                    to="/login"
-                                    onClick={handleLinkClick}
-                                    className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition"
-                                >
-                                    Iniciar Sesión
-                                </Link>
-                            </li>
-
-                            <li>
-                                <Link
-                                    to="/register"
-                                    onClick={handleLinkClick}
-                                    className="px-5 py-2 rounded-lg bg-orange-500 text-white font-semibold hover:bg-orange-600 transition shadow-sm"
-                                >
-                                    Registrarse
-                                </Link>
-                            </li>
+                            {/* 3. CONDICIONAL MÁGICO DE SESIÓN */}
+                            {currentUser ? (
+                                <>
+                                    <li className="hidden md:block text-sm text-gray-500 font-normal">
+                                        Hola, {currentUser.email}
+                                    </li>
+                                    <li>
+                                        <button
+                                            onClick={handleLogout}
+                                            className="px-4 py-2 rounded-lg text-red-600 bg-red-50 hover:bg-red-100 font-semibold transition w-full md:w-auto text-left md:text-center"
+                                        >
+                                            Cerrar Sesión
+                                        </button>
+                                    </li>
+                                </>
+                            ) : (
+                                <>
+                                    <li>
+                                        <Link
+                                            to="/login"
+                                            onClick={handleLinkClick}
+                                            className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition block text-center"
+                                        >
+                                            Iniciar Sesión
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link
+                                            to="/register"
+                                            onClick={handleLinkClick}
+                                            className="px-5 py-2 rounded-lg bg-orange-500 text-white font-semibold hover:bg-orange-600 transition shadow-sm block text-center"
+                                        >
+                                            Registrarse
+                                        </Link>
+                                    </li>
+                                </>
+                            )}
                         </ul>
                     </nav>
                 </div>
@@ -76,7 +105,6 @@ const PublicLayout = () => {
 
             {/* MAIN */}
             <main className="flex-grow pt-[120px] px-6 max-w-7xl mx-auto w-full">
-
                 <section className="text-center mb-14">
                     <h1 className="text-4xl md:text-5xl font-bold mb-4">
                         Descubrí Recetas Increíbles
@@ -87,7 +115,6 @@ const PublicLayout = () => {
                 </section>
 
                 <Outlet />
-
             </main>
 
             {/* FOOTER */}
