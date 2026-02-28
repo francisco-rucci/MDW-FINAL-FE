@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
-import { useAuth } from "./context/AuthContext";
 import { auth } from "./config/firebase";
 import { signOut } from "firebase/auth";
+import { useSelector } from 'react-redux';
+import { type RootState } from './store/store';
 
 const PublicLayout = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     
     // 1. Traemos el estado del usuario y la herramienta para navegar
-    const { currentUser } = useAuth();
+    const { currentUser } = useSelector((state: RootState) => state.auth);
     const navigate = useNavigate();
 
     const handleLinkClick = () => setMenuOpen(false);
@@ -61,7 +62,7 @@ const PublicLayout = () => {
                                 </Link>
                             </li>
 
-                            {/* 3. CONDICIONAL MÁGICO DE SESIÓN */}
+                            {/* 3. CONDICIONAL DE SESIÓN */}
                             {currentUser ? (
                                 <>
                                     <li className="hidden md:block text-sm text-gray-500 font-normal">
