@@ -1,46 +1,35 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../config/firebase';
+import { Link, Navigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux'; 
+import type { RootState, AppDispatch } from '../store/store';
+import { loginUser } from '../store/authSlice';
 
 const Login = () => {
-    const navigate = useNavigate();
+    const dispatch = useDispatch<AppDispatch>();
+    // Leemos TODO de Redux (el usuario, si está cargando, y los errores)
+    const { currentUser, loading, error } = useSelector((state: RootState) => state.auth);
 
-    // Estado para guardar las credenciales
+    // Estado local solo para lo que el usuario escribe
     const [credentials, setCredentials] = useState({
         email: '',
         password: ''
     });
 
-    const [errorMsg, setErrorMsg] = useState('');
+    if (currentUser) {
+        return <Navigate to="/" replace />;
+    }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setCredentials({
             ...credentials,
             [e.target.name]: e.target.value
         });
-        // Limpiamos el error si el usuario vuelve a escribir
-        if (errorMsg) setErrorMsg('');
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        try {
-            // Magia de Firebase: Verificamos credenciales
-            await signInWithEmailAndPassword(auth, credentials.email, credentials.password);
-            
-            // Si pasa esta línea, el login fue exitoso. 
-            // Por ahora lo mandamos al inicio, luego lo cambiaremos a la ruta privada del CRUD
-            navigate('/'); 
-
-        } catch (error: any) {
-            console.error("Error al iniciar sesión:", error);
-            if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                setErrorMsg('Correo o contraseña incorrectos.');
-            } else {
-                setErrorMsg('Hubo un error al intentar iniciar sesión.');
-            }
-        }
+        // Lo pasamos a Redux y él se encarga de Firebase
+        dispatch(loginUser({ email: credentials.email, password: credentials.password }));
     };
 
     return (
@@ -71,18 +60,20 @@ const Login = () => {
                     />
                 </div>
 
-                {/* Mensaje de error visual si falla el login */}
-                {errorMsg && (
+                {error && (
                     <p className="text-red-500 text-sm text-center font-medium bg-red-50 p-2 rounded">
-                        {errorMsg}
+                        {error}
                     </p>
                 )}
 
                 <button 
                     type="submit" 
-                    className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg transition-colors mt-2 shadow-sm"
+                    disabled={loading}
+                    className={`w-full text-white font-semibold py-3 rounded-lg transition-colors mt-2 shadow-sm ${
+                        loading ? 'bg-orange-300 cursor-not-allowed' : 'bg-orange-500 hover:bg-orange-600'
+                    }`}
                 >
-                    Iniciar Sesión
+                    {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
                 </button>
             </form>
 
