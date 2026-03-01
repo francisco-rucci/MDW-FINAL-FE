@@ -10,6 +10,7 @@ import './index.css';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
 import { AuthWrapper } from './components/AuthWrapper';
+import AdminRecipes from "./pages/AdminRecipes";
 
 const router = createBrowserRouter([
   {
@@ -18,7 +19,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        Component: Home, 
+        Component: Home,
         errorElement: <ErrorPage />
       },
       {
@@ -27,7 +28,11 @@ const router = createBrowserRouter([
       },
       {
         path: "register",
-        element: <Register />, 
+        element: <Register />,
+      },
+      {
+        path: "admin",
+        element: <AdminRecipes />,
       }
     ],
   }
@@ -37,7 +42,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
       <AuthWrapper>
-          <RouterProvider router={router} />
+        <RouterProvider router={router} />
       </AuthWrapper>
     </Provider>
   </StrictMode>

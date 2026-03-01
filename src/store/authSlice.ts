@@ -15,18 +15,16 @@ const initialState: AuthState = {
     error: null,
 };
 
-// Tu método adaptado a Redux Toolkit puro
 export const loginUser = createAsyncThunk(
     "auth/loginUser",
     async ({ email, password }: any, { rejectWithValue }) => {
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
-            
+
             // Obtenemos el token de Firebase
             const token = await user.getIdToken();
 
-            // Lo guardamos en el localStorage (SIN stringify para evitar comillas extras)
             localStorage.setItem("token", token);
 
             return {
@@ -39,7 +37,7 @@ export const loginUser = createAsyncThunk(
             if (error.code === "auth/invalid-credential") message = "Email o contraseña incorrectos";
             if (error.code === "auth/user-not-found") message = "El usuario no existe";
             if (error.code === "auth/wrong-password") message = "Contraseña incorrecta";
-            
+
             return rejectWithValue(message);
         }
     }
@@ -49,14 +47,14 @@ const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        // Mantenemos esto para cuando recargamos la página (AuthWrapper)
         setUser: (state, action: PayloadAction<{ uid: string; email: string | null; token: string } | null>) => {
             state.currentUser = action.payload;
             state.loading = false;
         },
-        // Una acción simple para borrar todo al hacer logout
+
         logoutRedux: (state) => {
             state.currentUser = null;
+            state.loading = false;
             localStorage.removeItem("token");
         }
     },
