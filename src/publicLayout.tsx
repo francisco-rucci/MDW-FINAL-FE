@@ -2,24 +2,24 @@ import { useState } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { auth } from "./config/firebase";
 import { signOut } from "firebase/auth";
-import { useSelector } from 'react-redux';
-import { type RootState } from './store/store';
+import { useSelector } from "react-redux";
+import { type RootState } from "./store/store";
 
 const PublicLayout = () => {
     const [menuOpen, setMenuOpen] = useState(false);
-    
-    // 1. Traemos el estado del usuario y la herramienta para navegar
+
+    // Trae el estado del usuario y la herramienta para navegar
     const { currentUser } = useSelector((state: RootState) => state.auth);
     const navigate = useNavigate();
 
     const handleLinkClick = () => setMenuOpen(false);
 
-    // 2. Función para cerrar sesión
+    // Función para cerrar sesión
     const handleLogout = async () => {
         try {
             await signOut(auth);
             handleLinkClick();
-            navigate("/"); 
+            navigate("/");
         } catch (error) {
             console.error("Error al cerrar sesión:", error);
         }
@@ -33,7 +33,10 @@ const PublicLayout = () => {
                 <div className="max-w-7xl mx-auto h-[80px] px-6 flex justify-between items-center relative">
 
                     {/* LOGO */}
-                    <Link to="/" className="text-2xl font-bold text-orange-500 tracking-tight">
+                    <Link
+                        to="/"
+                        className="text-2xl font-bold text-orange-500 tracking-tight"
+                    >
                         Recetas App
                     </Link>
 
@@ -43,9 +46,18 @@ const PublicLayout = () => {
                             onClick={() => setMenuOpen(!menuOpen)}
                             className="flex flex-col w-6 h-6 justify-center items-center gap-1"
                         >
-                            <span className={`block h-0.5 w-6 bg-gray-800 transition-transform duration-300 ${menuOpen ? "rotate-45 translate-y-2" : ""}`}></span>
-                            <span className={`block h-0.5 w-6 bg-gray-800 transition-opacity duration-300 ${menuOpen ? "opacity-0" : "opacity-100"}`}></span>
-                            <span className={`block h-0.5 w-6 bg-gray-800 transition-transform duration-300 ${menuOpen ? "-rotate-45 -translate-y-2" : ""}`}></span>
+                            <span
+                                className={`block h-0.5 w-6 bg-gray-800 transition-transform duration-300 ${menuOpen ? "rotate-45 translate-y-2" : ""
+                                    }`}
+                            ></span>
+                            <span
+                                className={`block h-0.5 w-6 bg-gray-800 transition-opacity duration-300 ${menuOpen ? "opacity-0" : "opacity-100"
+                                    }`}
+                            ></span>
+                            <span
+                                className={`block h-0.5 w-6 bg-gray-800 transition-transform duration-300 ${menuOpen ? "-rotate-45 -translate-y-2" : ""
+                                    }`}
+                            ></span>
                         </button>
                     </div>
 
@@ -57,17 +69,27 @@ const PublicLayout = () => {
               ${menuOpen ? "block" : "hidden"} md:flex`}
                         >
                             <li>
-                                <Link to="/" onClick={handleLinkClick} className="hover:text-orange-500 transition-colors">
+                                <Link
+                                    to="/"
+                                    onClick={handleLinkClick}
+                                    className="hover:text-orange-500 transition-colors"
+                                >
                                     Inicio
                                 </Link>
                             </li>
 
-                            {/* 3. CONDICIONAL DE SESIÓN */}
                             {currentUser ? (
                                 <>
-                                    <li className="hidden md:block text-sm text-gray-500 font-normal">
-                                        Hola, {currentUser.email}
+                                    <li>
+                                        <Link
+                                            to="/admin"
+                                            onClick={handleLinkClick}
+                                            className="px-4 py-2 rounded-lg bg-orange-500 text-white font-semibold hover:bg-orange-600 transition shadow-sm block text-center"
+                                        >
+                                            Administrar Recetas
+                                        </Link>
                                     </li>
+
                                     <li>
                                         <button
                                             onClick={handleLogout}
@@ -106,15 +128,6 @@ const PublicLayout = () => {
 
             {/* MAIN */}
             <main className="flex-grow pt-[120px] px-6 max-w-7xl mx-auto w-full">
-                <section className="text-center mb-14">
-                    <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                        Descubrí Recetas Increíbles
-                    </h1>
-                    <p className="text-gray-500 text-lg max-w-2xl mx-auto">
-                        Explorá recetas creadas por nuestra comunidad y encontrá tu próxima comida favorita.
-                    </p>
-                </section>
-
                 <Outlet />
             </main>
 

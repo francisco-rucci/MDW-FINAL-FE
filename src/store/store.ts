@@ -7,6 +7,5 @@ export const store = configureStore({
     },
 });
 
-// Tipos requeridos por TypeScript para poder usar Redux sin errores
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

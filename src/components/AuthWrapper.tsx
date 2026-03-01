@@ -15,7 +15,7 @@ export const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
                 // Si el user está logueado, le exigimos el token fresco a Firebase
                 const token = await user.getIdToken();
                 localStorage.setItem("token", token); // Nos aseguramos de que esté en localstorage
-                
+
                 dispatch(setUser({ uid: user.uid, email: user.email, token }));
             } else {
                 dispatch(logoutRedux()); // Borramos user y token del localstorage
@@ -25,7 +25,7 @@ export const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
         return unsubscribe;
     }, [dispatch]);
 
-    if (loading) return null; 
+    if (loading) return null;
 
     return <>{children}</>;
 };
