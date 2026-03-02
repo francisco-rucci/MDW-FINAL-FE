@@ -123,18 +123,18 @@ const AdminRecipes = () => {
                         </div>
                     )}
 
-                    {!loading &&
+{!loading &&
                         recipes.map((recipe) => (
                             <div
                                 key={recipe._id}
-                                className="flex justify-between items-center p-6 hover:bg-gray-50 transition"
+                                className="flex flex-col md:flex-row justify-between md:items-center gap-4 p-6 hover:bg-gray-50 transition"
                             >
                                 <div className="flex items-center gap-4">
                                     {recipe.image && (
                                         <img
                                             src={recipe.image}
                                             alt={recipe.title}
-                                            className="w-20 h-20 object-cover rounded-lg"
+                                            className="w-20 h-20 object-cover rounded-lg shrink-0" 
                                         />
                                     )}
 
@@ -155,7 +155,7 @@ const AdminRecipes = () => {
                                     </div>
                                 </div>
 
-                                <div className="flex gap-3">
+                                <div className="flex gap-3 w-full md:w-auto justify-end">
                                     <button
                                         onClick={() => {
                                             setSelectedRecipe(recipe);

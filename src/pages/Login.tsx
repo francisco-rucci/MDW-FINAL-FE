@@ -16,7 +16,7 @@ const Login = () => {
     });
 
     if (currentUser) {
-        return <Navigate to="/" replace />;
+        return <Navigate to="/admin" replace />;
     }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
