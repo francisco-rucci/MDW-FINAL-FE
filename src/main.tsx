@@ -10,6 +10,7 @@ import './index.css';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
 import { AuthWrapper } from './components/AuthWrapper';
+import { ProtectedRoute } from './components/ProtectedRoutes';
 import AdminRecipes from "./pages/AdminRecipes";
 
 const router = createBrowserRouter([
@@ -31,8 +32,13 @@ const router = createBrowserRouter([
         element: <Register />,
       },
       {
-        path: "admin",
-        element: <AdminRecipes />,
+        element: <ProtectedRoute />,
+        children: [
+          {
+            path: "admin",
+            element: <AdminRecipes />,
+          }
+        ]
       }
     ],
   }
