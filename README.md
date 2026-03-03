@@ -4,10 +4,10 @@ Interfaz de usuario para la plataforma de Recetas App, una aplicación web SPA (
 
 **Contexto Académico:** Este proyecto fue desarrollado con fines estrictamente académicos como Trabajo Práctico Final para la asignatura Metodologia de Desarrollo Web, de la carrera de Ingeniería en Sistemas dicata en la Universidad Abierta Interamericana (UAI).
 
-* **Integrantes** *:
-Francisco Rucci
-Leonel Luchini
-Agustin Agüero
+* **Integrantes:**  
+Francisco Rucci  
+Leonel Luchini  
+Agustin Agüero  
 
 ## 🚀 Tecnologías Utilizadas
 
