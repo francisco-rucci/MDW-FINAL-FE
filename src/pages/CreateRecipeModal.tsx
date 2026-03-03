@@ -15,6 +15,10 @@ const schema = Joi.object({
         "string.empty": "Los ingredientes son obligatorios.",
         "string.min": "Los ingredientes deben tener al menos 5 caracteres.",
     }),
+    instructions: Joi.string().min(10).required().messages({
+        "string.empty": "Las instrucciones son obligatorias.",
+        "string.min": "Las instrucciones deben tener al menos 10 caracteres.",
+    }),
     image: Joi.string().uri().allow("").optional().messages({
         "string.uri": "La imagen debe ser una URL válida.",
     }),
@@ -29,51 +33,49 @@ const CreateRecipeModal = ({ onClose, onCreated }: Props) => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [ingredients, setIngredients] = useState("");
+    const [instructions, setInstructions] = useState("");
     const [image, setImage] = useState("");
 
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState<string[]>([]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        setErrors([]);
+const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrors([]);
 
-        // Validación con Joi
-        const { error } = schema.validate(
-            { title, description, ingredients, image },
-            { abortEarly: false }
-        );
+    const { error } = schema.validate(
+        { title, description, ingredients, instructions, image },
+        { abortEarly: false }
+    );
 
-        if (error) {
-            setErrors(error.details.map((d) => d.message));
-            setLoading(false);
-            return;
+    if (error) {
+        setErrors(error.details.map((d) => d.message));
+        setLoading(false);
+        return;
+    }
+
+    try {
+        await api.post("/recipe", {
+            title,
+            description,
+            ingredients,
+            instructions,
+            image,
+        });
+
+        setLoading(false);
+        onCreated();
+        onClose();
+    } catch (error: any) {
+        setLoading(false);
+        if (error.response?.data?.details) {
+            setErrors(error.response.data.details);
+        } else {
+            setErrors([error.response?.data?.message || "Error al crear la receta."]);
         }
-
-        try {
-            await api.post("/recipe", {
-                title,
-                description,
-                ingredients,
-                image,
-            });
-
-            setLoading(false);
-            onCreated(); // refresca lista
-            onClose();   // cierra modal
-        } catch (error: any) {
-            setLoading(false);
-
-            if (error.response?.data?.message) {
-                setErrors([error.response.data.message]);
-            } else {
-                setErrors(["Error al crear la receta."]);
-            }
-
-            console.error(error);
-        }
-    };
+    }
+};
 
     return (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50">
@@ -116,6 +118,13 @@ const CreateRecipeModal = ({ onClose, onCreated }: Props) => {
                         value={ingredients}
                         onChange={(e) => setIngredients(e.target.value)}
                         className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    />
+
+                    <textarea
+                        placeholder="Instrucciones (Paso a paso)"
+                        value={instructions}
+                        onChange={(e) => setInstructions(e.target.value)}
+                        className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 min-h-[100px]"
                     />
 
                     <input

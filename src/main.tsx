@@ -21,7 +21,6 @@ const router = createBrowserRouter([
       {
         index: true,
         Component: Home,
-        errorElement: <ErrorPage />
       },
       {
         path: "login",
@@ -39,6 +38,10 @@ const router = createBrowserRouter([
             element: <AdminRecipes />,
           }
         ]
+      },
+      {
+        path: "*",
+        element: <ErrorPage />
       }
     ],
   }

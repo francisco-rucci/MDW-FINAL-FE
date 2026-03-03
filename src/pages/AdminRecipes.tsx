@@ -12,7 +12,9 @@ interface Recipe {
     title: string;
     description: string;
     ingredients: string;
+    instructions: string;
     image?: string;
+    isActive?: boolean;
     user?: {
         name?: string;
         lastName?: string;
@@ -44,7 +46,7 @@ const AdminRecipes = () => {
     const fetchRecipes = async () => {
         try {
             setLoading(true);
-            const response = await api.get("/recipe");
+            const response = await api.get("/recipe/admin/all");
             setRecipes(response.data.data);
         } catch (err) {
             const error = err as AxiosError;
@@ -82,6 +84,15 @@ const AdminRecipes = () => {
             fetchRecipes();
         } catch (err) {
             console.error(err);
+        }
+    };
+
+    const handleReactivate = async (id: string) => {
+        try {
+            await api.patch(`/recipe/reactivate/${id}`);
+            fetchRecipes(); // Refrescamos la lista
+        } catch (err) {
+            console.error("Error al reactivar", err);
         }
     };
 
@@ -123,7 +134,7 @@ const AdminRecipes = () => {
                         </div>
                     )}
 
-{!loading &&
+                        {!loading &&
                         recipes.map((recipe) => (
                             <div
                                 key={recipe._id}
@@ -140,7 +151,12 @@ const AdminRecipes = () => {
 
                                     <div>
                                         <h3 className="text-lg font-semibold text-gray-800">
-                                            {recipe.title}
+                                            {recipe.title} 
+                                            {recipe.isActive === false && (
+                                                <span className="ml-2 text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full uppercase font-bold tracking-wider">
+                                                    Desactivada
+                                                </span>
+                                            )}
                                         </h3>
 
                                         <p className="text-gray-600 text-sm line-clamp-2">
@@ -156,6 +172,8 @@ const AdminRecipes = () => {
                                 </div>
 
                                 <div className="flex gap-3 w-full md:w-auto justify-end">
+                                    {recipe.isActive !== false ? (
+                                    <>
                                     <button
                                         onClick={() => {
                                             setSelectedRecipe(recipe);
@@ -175,6 +193,15 @@ const AdminRecipes = () => {
                                     >
                                         Eliminar
                                     </button>
+                                    </>
+                                    ) : (
+                                    <button
+                                        onClick={() => handleReactivate(recipe._id)}
+                                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition font-medium shadow-sm"
+                                    >
+                                        Activar Receta
+                                    </button>
+                                    )}
                                 </div>
                             </div>
                         ))}
@@ -206,27 +233,27 @@ const AdminRecipes = () => {
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50">
                     <div className="bg-white p-8 rounded-2xl shadow-2xl w-96">
                         <h3 className="text-xl font-bold mb-6 text-center text-gray-800">
-                            ¿Qué tipo de eliminación querés hacer?
+                            ¿Qué querés hacer con esta receta?
                         </h3>
 
                         <div className="flex flex-col gap-4">
                             <button
                                 onClick={handleDeleteSoft}
-                                className="bg-yellow-500 hover:bg-yellow-600 text-white py-3 rounded-xl transition"
+                                className="bg-yellow-500 hover:bg-yellow-600 text-white py-3 rounded-xl transition font-medium"
                             >
-                                Eliminación Lógica
+                                Desactivar Receta
                             </button>
 
                             <button
                                 onClick={handleDeleteHard}
-                                className="bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl transition"
+                                className="bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl transition font-medium"
                             >
-                                Eliminación Física
+                                Eliminar Definitivamente
                             </button>
 
                             <button
                                 onClick={closeDeleteModal}
-                                className="border border-gray-300 text-gray-700 py-3 rounded-xl hover:bg-gray-100 transition"
+                                className="border border-gray-300 text-gray-700 py-3 rounded-xl hover:bg-gray-100 transition font-medium"
                             >
                                 Cancelar
                             </button>

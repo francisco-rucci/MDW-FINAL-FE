@@ -10,6 +10,7 @@ interface Recipe {
     title: string;
     description: string;
     ingredients: string;
+    instructions: string;
     image?: string;
 }
 
@@ -30,6 +31,10 @@ const schema = Joi.object({
         "string.min": "Los ingredientes deben tener al menos 5 caracteres.",
         "any.required": "Los ingredientes son obligatorios.",
     }),
+    instructions: Joi.string().min(10).required().messages({
+        "string.empty": "Las instrucciones son obligatorias.",
+        "string.min": "Las instrucciones deben tener al menos 10 caracteres.",
+    }),
     image: Joi.string().uri().allow("").optional().messages({
         "string.uri": "La imagen debe ser una URL válida.",
     }),
@@ -47,6 +52,7 @@ const EditRecipeModal = ({ recipe, onClose, onUpdated }: Props) => {
     const [title, setTitle] = useState<string>(recipe.title);
     const [description, setDescription] = useState<string>(recipe.description);
     const [ingredients, setIngredients] = useState<string>(recipe.ingredients);
+    const [instructions, setInstructions] = useState<string>(recipe.instructions);
     const [image, setImage] = useState<string>(recipe.image || "");
     const [loading, setLoading] = useState<boolean>(false);
     const [errors, setErrors] = useState<string[]>([]);
@@ -57,7 +63,7 @@ const EditRecipeModal = ({ recipe, onClose, onUpdated }: Props) => {
         setErrors([]);
 
         const { error } = schema.validate(
-            { title, description, ingredients, image },
+            { title, description, ingredients, instructions, image },
             { abortEarly: false }
         );
 
@@ -72,6 +78,7 @@ const EditRecipeModal = ({ recipe, onClose, onUpdated }: Props) => {
                 title,
                 description,
                 ingredients,
+                instructions,
                 image,
             });
 
@@ -145,6 +152,13 @@ const EditRecipeModal = ({ recipe, onClose, onUpdated }: Props) => {
                             rows={3}
                         />
                     </div>
+
+                    <textarea
+                        placeholder="Instrucciones (Paso a paso)"
+                        value={instructions}
+                        onChange={(e) => setInstructions(e.target.value)}
+                        className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 min-h-[100px]"
+                    />
 
                     <div>
                         <label className="block mb-1 font-medium">URL de Imagen</label>

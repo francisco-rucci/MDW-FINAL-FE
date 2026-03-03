@@ -1,16 +1,20 @@
 import { useEffect, useState } from 'react';
 import api from '../service/api';
+import RecipeDetailModal from './RecipeDetailModal';
 
 interface Recipe {
     _id: string;
     title: string;
     description: string;
+    ingredients: string,
+    instructions: string,
     image: string;
 }
 
 const Home = () => {
     const [recipes, setRecipes] = useState<Recipe[]>([]);
     const [loading, setLoading] = useState(true);
+    const [viewRecipe, setViewRecipe] = useState<Recipe | null>(null);
 
     useEffect(() => {
         api.get('/recipe')
@@ -32,7 +36,7 @@ const Home = () => {
         );
     }
 
-    return (
+return (
         <>
             <section className="text-center mb-14">
                 <h1 className="text-4xl md:text-5xl font-bold mb-4">
@@ -49,17 +53,18 @@ const Home = () => {
                     recipes.map((recipe) => (
                         <div
                             key={recipe._id}
-                            className="border p-4 rounded-lg shadow hover:shadow-lg transition"
+                            onClick={() => setViewRecipe(recipe)}
+                            className="border p-4 rounded-lg shadow hover:shadow-lg transition cursor-pointer flex flex-col h-full"
                         >
                             <img
                                 src={recipe.image}
                                 alt={recipe.title}
                                 className="w-full h-48 object-cover rounded"
                             />
-                            <h2 className="text-xl font-bold mt-2">
+                            <h2 className="text-xl font-bold mt-2 truncate">
                                 {recipe.title}
                             </h2>
-                            <p className="text-gray-600">
+                            <p className="text-gray-600 mt-1 line-clamp-2">
                                 {recipe.description}
                             </p>
                         </div>
@@ -70,6 +75,14 @@ const Home = () => {
                     </p>
                 )}
             </div>
+
+            {/* MODAL DE DETALLE CONDICIONAL */}
+            {viewRecipe && (
+                <RecipeDetailModal 
+                    recipe={viewRecipe} 
+                    onClose={() => setViewRecipe(null)} 
+                />
+            )}
         </>
     );
 };

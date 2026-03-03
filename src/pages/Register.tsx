@@ -17,6 +17,9 @@ const Register = () => {
         password: ''
     });
 
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+
     // Si ya está logueado, va al Home
     if (currentUser) {
         return <Navigate to="/" replace />;
@@ -31,6 +34,8 @@ const Register = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setErrorMessage(null);
+        setLoading(true);
 
         try {
             // Crea usuario en Firebase
@@ -57,12 +62,18 @@ const Register = () => {
             console.error("Error al registrar:", error);
 
             if (error.code === 'auth/email-already-in-use') {
-                alert("Ese correo electrónico ya está registrado.");
+                setErrorMessage("Ese correo electrónico ya está registrado en Firebase.");
             } else if (error.code === 'auth/weak-password') {
-                alert("La contraseña debe tener al menos 6 caracteres.");
-            } else {
-                alert("Hubo un error en el registro.");
+                setErrorMessage("La contraseña debe tener al menos 6 caracteres.");
+            } 
+            else if (error.response?.data?.message) {
+                setErrorMessage(error.response.data.message);
+            } 
+            else {
+                setErrorMessage("Hubo un error en el registro. Por favor, intentá de nuevo.");
             }
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -76,6 +87,12 @@ const Register = () => {
                     Unite a la comunidad de Recetas App
                 </p>
             </div>
+            
+            {errorMessage && (
+                <div className="mb-4 bg-red-100 text-red-700 p-3 rounded text-sm text-center">
+                    {errorMessage}
+                </div>
+            )}
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                 <div className="flex gap-4">
@@ -138,9 +155,12 @@ const Register = () => {
 
                 <button
                     type="submit"
-                    className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg transition"
+                    disabled={loading}
+                    className={`w-full text-white font-semibold py-3 rounded-lg transition ${
+                        loading ? 'bg-orange-300' : 'bg-orange-500 hover:bg-orange-600'
+                    }`}
                 >
-                    Registrarse
+                    {loading ? 'Registrando...' : 'Registrarse'}
                 </button>
             </form>
 
